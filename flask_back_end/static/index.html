@@ -1,0 +1,456 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+
+	  <title>Logs</title>
+
+
+
+	<style>
+		table, th, td {
+		  border: 1px solid black;
+		  border-collapse: collapse;
+		}
+	</style>
+
+</head>
+
+<body>
+
+	<div id="app">
+<!--			
+	List of projects for user {{ currentUser }} : 
+
+	<ul>
+		<li v-for="proj in projects">
+			{{ proj.name }}
+		</li>
+	</ul>
+	
+	
+
+  <p>
+    <router-link to="/user/foo">/user/foo</router-link>
+    <router-link to="/user/bar">/user/bar</router-link>
+
+	<router-link to="/project/CaptioningLV" >CaptioningLV</router-link>			
+	<router-link to="/project/CaptioningRU" >CaptioningRU</router-link>			
+  </p>
+  
+
+
+  
+  	<ul>
+		<li v-for="proj in projects">			
+			<router-link :to="`/project/${proj.name}`" >{{proj.name}}</router-link>			
+						 
+		</li>
+	</ul>
+    <button disabled > Create new project ... </button>
+  -->	
+  
+  <router-view>
+  
+  </router-view>
+
+	
+	
+	<!--
+		
+		<button type="button" onclick = "document.getElementById('btnHistory').enabled=false;" id = "btnHistory">History</button>
+		<button type="button" onclick = "" id = "btnData"   >Data</button>
+		
+		<table>
+			<caption>Runs : </caption>
+			<thead>
+				<tr>
+					<th> ID </th>
+					<th> Date </th>
+					<th> Final accuracy </th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr v-for="run in runs">
+					<td>{{ run.id }}</td>
+					<td>{{ run.msg }}</td>					
+				</tr>
+				
+			<tbody>
+		</table>
+	
+		<br/>
+		<br/>
+	-->	
+		<!--
+		<p>
+			Raw info:
+			<br/>
+			{{ runs }}
+		</p>
+		-->
+			
+	</div>
+
+  <script src="https://unpkg.com/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+  
+  <script type="text/javascript">
+    //const URL = "http://localhost:5000/"
+	
+	const URL = "http://localhost:80/"
+	const User = {
+		template: `<div> User {{ $route.params.id }}</div>`
+	}  
+	
+	const AddProject = 	{
+		template: ` <div>
+					<p>Start of component AddProject</p> <br> 
+
+					<form action ="http://localhost/create_new_project" method = "POST" 
+						  enctype = "multipart/form-data">
+						 Project name : <br>
+						 <input type="text" name="project_name"/> <br>
+						 <input type = "file" name = "zip_file" /> <br>
+						 
+						 <input type = "submit"/>
+					</form>
+					
+							
+					<p>End of component</p> <br> 
+					</div>`
+		,
+		props:['project_id']
+		,
+		data: function(){
+			return {
+				loading:false,				
+				runs:[],
+				error:null
+			}
+		},
+		created () {
+			// fetch the data when the view is created and the data is
+			// already being observed
+			//this.fetchData()
+		},
+		watch: {
+			// call again the method if the route changes
+			//'$route': 'fetchData'
+		},		
+		methods: {
+		
+			getPost( project_id ){		
+				//console.log(project_id);
+				//runs = fetch('http://127.0.0.1:5000/get_runs/'+project_id)
+				//.then(response=>response.json())
+				//.then(json => {
+				//	this.res = json.res
+				//})
+				//return (null,runs);
+			},
+			
+			fetchData () {
+				this.error = this.post = null
+				this.loading = true
+				// replace `getPost` with your data fetching util / API wrapper
+				res = this.getPost(this.project_id);
+				
+				this.loading = false
+				if (res.err) {
+				  this.error = err.toString()
+				} else {
+				  this.runs = runs
+				}
+			}
+		}				
+	} 
+	
+	const Project = {
+		template: ` <div>
+					<p>Start of component Project</p> <br> 
+					
+					<p>Project {{ project_id }} </p>
+					
+					<button disabled> Data </button> 
+					<button disabled> Runs </button> <br>
+					
+					Training data set:
+					
+					<a :href=" 'http://localhost/' + 'get_training_set?project_id=' + project_id + '&file_name=' + training_data_download_link "> {{training_data_download_link}}</a>
+					
+					
+					<table style="width:80%">
+						<caption>Runs : </caption>
+						<thead>
+							<tr>
+								<th> # </th>
+								<th> ID </th>
+								<th> Start datetime </th>
+								<th> End  datetime </th>
+								<th> Final accuracy </th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="run, ind in runs">								
+								<td>{{ ind }}</td>
+								
+								<td><router-link :to="'/run/' + run.id" >{{run.id}}</router-link></td>
+								<td>{{ run.start_time }}</td>
+								<td>{{ run.finish_time }}</td>								
+								<td>97</td>
+							</tr>
+							
+						</tbody>
+					</table>
+							
+					<p>End of component</p> <br> 
+					</div>`
+		,
+		props:['project_id']
+		,
+		data: function(){
+			return {
+				loading:false,				
+				runs:[],
+				training_data_download_link:"",
+				error:null
+			}
+		},
+		created () {
+			// fetch the data when the view is created and the data is
+			// already being observed
+			this.fetchData()
+		},
+		watch: {
+			// call again the method if the route changes
+			'$route': 'fetchData'
+		},		
+		methods: {
+		
+			getPost( project_id ){		
+				console.log(project_id);
+				runs = fetch( 'http://localhost/' + 'get_runs/'+project_id)
+				.then(response=>response.json())
+				.then(json => {
+					this.runs = json.runs
+					this.training_data_download_link = json.training_data_download_link
+				})
+				return (null,runs);
+			},
+			
+			fetchData () {
+				this.error = this.post = null
+				this.loading = true
+				// replace `getPost` with your data fetching util / API wrapper
+				res = this.getPost(this.project_id);
+				
+				this.loading = false
+				if (res.err) {
+				  this.error = err.toString()
+				} else {
+				  this.runs = runs
+				}
+			}
+		}			
+	} 
+
+const Run = {
+		template: ` <div>
+					<p>Start of component Run</p> <br> 
+					<p>Run details:</p>
+					<p>Run start time: {{run.start_time}}</p>
+					<p>Run finish time:{{run.finish_time}}</p>
+					<p>List of logged messages:</p>
+						<table style="width:80%">
+							<caption>Logged messages : </caption>
+							<thead>
+								<tr>
+									<th> # </th>
+									<th> ID </th>
+									<th> Message </th>
+									
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="log, ind in run.logs">								
+									<td>{{ ind }}</td>								
+									<td>{{log.id}}</td>
+									<td>{{ log.msg }}</td>								
+								</tr>							
+							</tbody>
+						</table>
+					<p>List of uploaded files:</p>
+						<table style="width:80%">
+							<caption>Uploaded files : </caption>
+							<thead>
+								<tr>
+									<th> # </th>
+									<th> File name </th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="file, ind in run.files">								
+									<td>{{ind}}</td>								
+									<td> <a :href= " 'http://localhost/' + 'get_file/' + file + '?run_id=' + run_id" >{{file}}</a> </td>
+									
+								</tr>							
+							</tbody>
+						</table>
+					<p>Labels on data:</p> 
+					
+					<img href = "">
+					<p> Gold : </p>
+					{{run.gold}}
+					<p> Silver : </p>
+					{{run.silver}}
+					<p> FileGoldSilver : </p>
+					{{run.file_gold_silver}}
+					
+						<table style="width:80%">
+							<caption>Training files : </caption>
+							<thead>
+								<tr>
+									<th> # </th>
+									<th> File name </th>
+									<th> Gold </th>
+									<th> Silver </th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="elem, ind in run.file_gold_silver">								
+									<td>{{ind}}</td>								
+									<td><img :src=" 'http://localhost/' + 'get_training_file/'+elem[0]+'?project_id=' + run.project_id"></td>
+									<td>{{elem[1]}}</td>
+									<td>{{elem[2]}}</td>
+									
+								</tr>							
+							</tbody>
+						</table>
+					
+					
+					<p>End of component</p> <br> 
+					</div>`
+		,
+		props:['run_id']
+		,
+		data: function(){
+			return {
+				loading:false,		
+					
+				run:[],
+				error:null
+			}
+		},
+		created () {
+			// fetch the data when the view is created and the data is
+			// already being observed
+			this.fetchData()
+		},
+		watch: {
+			// call again the method if the route changes
+			'$route': 'fetchData'
+		},		
+		methods: {
+		
+			getPost( run_id ){		
+				console.log(run_id);
+				run = fetch( 'http://localhost/' + 'get_run/'+run_id)
+				.then(response=>response.json())
+				.then(json => {
+					this.run = json.run
+				})
+				return (null,run);
+			},
+			
+			fetchData () {
+				this.error = this.post = null
+				this.loading = true
+				// replace `getPost` with your data fetching util / API wrapper
+				res = this.getPost(this.run_id);
+				
+				this.loading = false
+				if (res.err) {
+				  this.error = err.toString()
+				} else {
+				  this.run = run
+				}
+			}
+		}		
+		
+		
+	}	
+	
+	const ListOfProjects = {
+		template: ` <div>
+					<p>Start of component ListOfProjects</p> 	
+					<p>List of projects for user : {{user_id}} </p>
+					<!--
+					<p>List of projects for user : {{this.$parent.projects}} </p>
+					-->
+					<ul>
+						<li v-for="proj in this.$parent.projects">			
+							
+							<router-link :to="'/project/' + proj.id" >{{proj.name}}</router-link>							
+							
+						</li>
+					</ul>
+					
+					<button @click="clicked()" > Create new project ... </button>
+					
+					
+					<p>End of component ListOfProjects</p> 
+					</div>`
+		,
+		props:['user_id'],
+
+		methods:{
+			clicked(){
+				router.push("/addproject/" + vue_app.currentUser)
+			}
+		}
+		
+	}  	
+	
+	const router = new VueRouter({
+	  routes: [
+		{ path: '/user/:id', 			component: User },
+		{ path: '/project/:project_id', component: Project, 		props:true },
+		{ path: '/run/:run_id', 		component: Run,		 		props:true },
+		{ path: '/:user_id', 			component: ListOfProjects , props: true},
+		{ path: '/addproject/:user_id', component: AddProject , 	props: true}
+		
+	  ]
+	})
+
+    const vue_app = new Vue({
+	  router,	
+      el: '#app',
+      data: {
+		currentUser : 1,
+		projects : []
+      },
+	  created(){
+		fetch( 'http://localhost/' + 'get_projects?user=1')
+		.then(response=>response.json())
+		.then(json => {
+			this.projects = json.projects
+		})
+	  
+	  }
+	 
+    }).$mount('#app');
+
+
+	router.push("/" + vue_app.currentUser);
+	
+	
+	
+
+
+  </script>
+
+  
+</body>
+</html>

@@ -1,0 +1,24 @@
+version: '3'
+services:
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+  back_end:
+    build: ./flask_back_end/
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo
+    links:
+      - mongo
+    volumes:
+      - ./../flask_app/data/:/flask_app/uploads/
+  front_end:
+    build: ./front_end/
+    depends_on:
+      - back_end
+    links:
+      - back_end
+  
+

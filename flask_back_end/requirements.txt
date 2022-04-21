@@ -1,0 +1,5 @@
+Flask
+bson
+flask_pymongo
+pyjwt
+flask_uploads

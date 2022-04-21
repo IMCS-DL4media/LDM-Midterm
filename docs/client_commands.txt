@@ -1,0 +1,33 @@
+1) log(msg)
+   Ieraksta zinojumu msg tekosoja run`a
+   msg String   
+   GET
+   SERVER_URL + "/log", {'run_id': CURR_RUN_ID, 'msg': msg, 'token': TOKEN})
+
+
+2) start_run(project_name):
+    Uzsauk jaunu run`u ieks projekta project_name
+    GET
+    SERVER_URL + "/start_run/" + CURR_PROJECT_NAME, 
+    {'token': TOKEN}
+
+3) finish_run
+    Pabeidz tekošo run`u
+    GET
+    SERVER_URL + "/finish_run", 
+   {'run_id': CURR_RUN_ID, 'token': TOKEN}
+   
+4) upload_file
+    Augsupielade failu (file_name) un pievieno to tekosam run'ām
+    POST
+    SERVER_URL + '/upload_file?
+    run_id=' + CURR_RUN_ID + '
+    &token=' + TOKEN,
+    files={'file': f})
+    
+5) login(user_id, psw):
+    Megina autorizet lietotaju user_id ar paroli pws. Veiksmes gadijuma atgriez token_id.
+    POST
+    SERVER_URL + '/login/', 
+    json={'user_id': user_id, 'user_psw_hash': psw})
+    

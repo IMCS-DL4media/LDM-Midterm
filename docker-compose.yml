@@ -1,0 +1,41 @@
+version: '2'
+services:
+  mongo:
+    image: mongo
+    volumes:
+      - /mnt/data/MongoData/:/data/db 
+    # ports:
+    #   - "27017:27017"
+    environment:
+      - "TZ=Europe/Riga"
+  back_end:
+    build: 
+      context: ./flask_back_end/
+      args:
+        - "dck_build_arg_mongo_uri=mongodb://mongo:27017/logging_db"
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo
+    links:
+      - mongo
+    volumes:
+      #- ./../flask_app/data/:/flask_app/uploads/
+       - /mnt/data/AppData/:/flask_app/uploads/
+    environment:
+      - "TZ=Europe/Riga"
+  front_end:
+    build: 
+      context: ./front_end_sbadmin/
+      args:
+        - "dck_build_arg_server_url=localhost:5000"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - back_end
+    links:
+      - back_end
+    environment:
+      - "TZ=Europe/Riga"
+  
+

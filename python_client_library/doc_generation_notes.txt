@@ -1,0 +1,13 @@
+To generate docs in github markdown format (from python docstrings):
+
+0) Install pydoc-markdown: pip install pydoc-markdown
+1) cd to python_client_library
+2) run: pydocmd simple logging_functions+ >docs.md
+
+
+Other option is to generate docs in html - pydoc can be used to do that: 
+
+To generate docs:
+1) cd to python_client_library
+2) run: python -m  pydoc -w logging_functions
+
